@@ -1,0 +1,25 @@
+name: Trigger Jenkins Pipe
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  trigger-a-jenkins-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Jenkins Pip
+        id: triggerjenkinsjob
+        run: |
+          JENKINS_SERVER="${{ secrets.JENKINS_SERVER }}"
+          JENKINS_JOB="${{ secrets.JENKINS_PROJECT }}"
+          JENKINS_USERNAME="${{ secrets.JENKINS_USERNAME }}"
+          JENKINS_TOKEN="${{ secrets.JENKINS_PAT }}"
+
+          # Fetch Jenkins build status using GitHub API
+          STATUS=$(curl -s -u "${JENKINS_USERNAME}:${JENKINS_TOKEN}" "${JENKINS_SERVER}/job/${JENKINS_JOB}/lastBuild/api/json" | jq -r '.result')
+
+          # Output Jenkins build status
+          echo "Jenkins Build Status: ${STATUS}"
